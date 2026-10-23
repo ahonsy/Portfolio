@@ -1143,3 +1143,95 @@ body {
     align-items: center !important;
   }
 }
+/* ===== ASSET LAYER FIX ===== */
+
+/* Keep decorative assets behind the actual interface */
+#bg-video,
+#bg-stripes,
+#bg-halftone,
+#bg-stars,
+#art-home,
+#art-projects,
+#art-skills,
+#art-about,
+#art-contact,
+#hero-art {
+  pointer-events: none !important;
+}
+
+/* Full-screen background video */
+#bg-video {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: cover !important;
+  z-index: 0 !important;
+}
+
+/* Full-screen decorative background layers */
+#bg-stripes,
+#bg-halftone,
+#bg-stars {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  max-width: none !important;
+  max-height: none !important;
+  z-index: 1 !important;
+}
+
+/* Individual illustrations should not all appear together */
+#art-home,
+#art-projects,
+#art-skills,
+#art-about,
+#art-contact,
+#hero-art {
+  position: fixed !important;
+  max-width: 35vw !important;
+  max-height: 45vh !important;
+  width: auto;
+  height: auto;
+  object-fit: contain !important;
+  opacity: 0 !important;
+  z-index: 2 !important;
+}
+
+/* Only show the artwork belonging to the current screen */
+body[data-screen="home"].has-art-home #art-home,
+body[data-screen="projects"].has-art-projects #art-projects,
+body[data-screen="skills"].has-art-skills #art-skills,
+body[data-screen="about"].has-art-about #art-about,
+body[data-screen="contact"].has-art-contact #art-contact {
+  opacity: 0.2 !important;
+}
+
+/* Interface stays above background artwork */
+#shell {
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+#wipe {
+  z-index: 100 !important;
+}
+
+#cursor {
+  z-index: 200 !important;
+}
+
+@media (max-width: 600px) {
+  #art-home,
+  #art-projects,
+  #art-skills,
+  #art-about,
+  #art-contact,
+  #hero-art {
+    max-width: 42vw !important;
+    max-height: 30vh !important;
+  }
+}
