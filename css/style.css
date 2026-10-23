@@ -1307,3 +1307,66 @@ body[data-screen="home"] #art-contact {
   position: relative !important;
   z-index: 10 !important;
 }
+/* === ACTUAL FULLSCREEN FIX === */
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+#bg {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  overflow: hidden !important;
+  z-index: 0 !important;
+}
+
+/* Target the actual HTML element, no extra class required */
+#bg > img#art-home.menu-art {
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+
+  max-width: none !important;
+  max-height: none !important;
+
+  object-fit: cover !important;
+  object-position: center !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+  transform: none !important;
+
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+body[data-screen="home"] #bg > img#art-home.menu-art {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Remove the unwanted decorative shapes */
+#bg-stripes,
+#bg-halftone,
+#bg-vignette,
+#bg .bg-star {
+  display: none !important;
+}
+
+/* Keep content above the background */
+#shell {
+  position: relative;
+  z-index: 10;
+}
