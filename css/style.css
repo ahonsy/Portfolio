@@ -1143,77 +1143,135 @@ body {
     align-items: center !important;
   }
 }
-/* ===== ASSET LAYER FIX ===== */
+/* ===== CORRECTED SCRAPBOOK ASSET LAYERS ===== */
 
-/* Keep decorative assets behind the actual interface */
-#bg-video,
+/* One full-viewport background container */
+#bg {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  overflow: hidden !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+  isolation: isolate;
+}
+
+/* Ambient decorative layers stay inside the background */
 #bg-stripes,
 #bg-halftone,
-#bg-stars,
-#art-home,
-#art-projects,
-#art-skills,
-#art-about,
-#art-contact,
-#hero-art {
+#bg-vignette {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
   pointer-events: none !important;
 }
 
-/* Full-screen background video */
-#bg-video {
-  position: fixed !important;
-  inset: 0 !important;
-  width: 100vw !important;
-  height: 100dvh !important;
+/* The SVG stars use classes, not an ID */
+#bg .bg-star {
+  position: absolute !important;
+  display: block;
   max-width: none !important;
   max-height: none !important;
-  object-fit: cover !important;
-  z-index: 0 !important;
+  opacity: 0.32;
+  pointer-events: none !important;
 }
 
-/* Full-screen decorative background layers */
-#bg-stripes,
-#bg-halftone,
-#bg-stars {
-  position: fixed !important;
-  inset: 0 !important;
-  width: 100vw !important;
-  height: 100dvh !important;
-  max-width: none !important;
-  max-height: none !important;
-  z-index: 1 !important;
-}
-
-/* Individual illustrations should not all appear together */
-#art-home,
-#art-projects,
-#art-skills,
-#art-about,
-#art-contact,
-#hero-art {
-  position: fixed !important;
-  max-width: 35vw !important;
-  max-height: 45vh !important;
-  width: auto;
-  height: auto;
+/* Artwork stays inside the viewport background */
+#bg .menu-art {
+  position: absolute !important;
+  display: block;
+  width: auto !important;
+  height: auto !important;
+  max-width: min(42vw, 560px) !important;
+  max-height: 68vh !important;
   object-fit: contain !important;
   opacity: 0 !important;
+  visibility: hidden !important;
   z-index: 2 !important;
+  pointer-events: none !important;
+  transform: translateY(12px) rotate(-3deg);
+  transition:
+    opacity 500ms ease,
+    transform 650ms ease,
+    visibility 500ms ease;
 }
 
-/* Only show the artwork belonging to the current screen */
-body[data-screen="home"].has-art-home #art-home,
-body[data-screen="projects"].has-art-projects #art-projects,
-body[data-screen="skills"].has-art-skills #art-skills,
-body[data-screen="about"].has-art-about #art-about,
-body[data-screen="contact"].has-art-contact #art-contact {
-  opacity: 0.2 !important;
+/* Home artwork */
+#art-home {
+  top: 50% !important;
+  right: 4% !important;
+  bottom: auto !important;
+  left: auto !important;
+  transform: translateY(-46%) rotate(-3deg);
 }
 
-/* Interface stays above background artwork */
+/* Storytime artwork */
+#art-projects {
+  top: 50% !important;
+  right: 3% !important;
+  bottom: auto !important;
+  left: auto !important;
+  transform: translateY(-46%) rotate(2deg);
+}
+
+/* Fun Time artwork */
+#art-skills {
+  top: auto !important;
+  right: auto !important;
+  bottom: 4% !important;
+  left: 3% !important;
+  transform: rotate(-3deg);
+}
+
+/* Friends artwork */
+#art-about {
+  top: auto !important;
+  right: 3% !important;
+  bottom: 4% !important;
+  left: auto !important;
+  transform: rotate(3deg);
+}
+
+/* Letters video: treat it as section artwork, not a second page background */
+#art-contact {
+  top: 50% !important;
+  right: 3% !important;
+  bottom: auto !important;
+  left: auto !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: min(38vw, 480px) !important;
+  max-height: 58vh !important;
+  object-fit: contain !important;
+  transform: translateY(-46%) rotate(-2deg);
+}
+
+/* Show only the artwork for the current section */
+body.has-art-home[data-screen="home"] #art-home,
+body.has-art-projects[data-screen="projects"] #art-projects,
+body.has-art-skills[data-screen="skills"] #art-skills,
+body.has-art-about[data-screen="about"] #art-about,
+body.has-art-contact[data-screen="contact"] #art-contact {
+  opacity: 0.22 !important;
+  visibility: visible !important;
+}
+
+/* Don't let the extra hero image overlap the section artwork */
+#hero-art {
+  display: none !important;
+}
+
+/* The website interface must remain above the background */
 #shell {
   position: relative !important;
   z-index: 10 !important;
+}
+
+#slash {
+  z-index: 20 !important;
 }
 
 #wipe {
@@ -1224,14 +1282,46 @@ body[data-screen="contact"].has-art-contact #art-contact {
   z-index: 200 !important;
 }
 
+/* Keep artwork subtle and properly sized on phones */
 @media (max-width: 600px) {
-  #art-home,
-  #art-projects,
-  #art-skills,
-  #art-about,
-  #art-contact,
-  #hero-art {
-    max-width: 42vw !important;
-    max-height: 30vh !important;
+  #bg .menu-art {
+    max-width: 38vw !important;
+    max-height: 28vh !important;
+  }
+
+  #art-home {
+    top: 12% !important;
+    right: 2% !important;
+    transform: none;
+  }
+
+  #art-projects {
+    top: 14% !important;
+    right: 2% !important;
+    transform: none;
+  }
+
+  #art-skills {
+    bottom: 3% !important;
+    left: 2% !important;
+  }
+
+  #art-about {
+    right: 2% !important;
+    bottom: 3% !important;
+  }
+
+  #art-contact {
+    top: 14% !important;
+    right: 2% !important;
+    max-width: 35vw !important;
+    max-height: 25vh !important;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #bg .menu-art {
+    transition: none !important;
   }
 }
