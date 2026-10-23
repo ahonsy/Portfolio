@@ -1002,3 +1002,144 @@ body.cursor-on button {
     transform: none !important;
   }
   }
+
+/* ===== SCRAPBOOK FIX: COLORS + CENTERED HOME ===== */
+
+:root {
+  --sage: #a8b79b;
+  --sage-light: #dce4d2;
+  --forest: #344a3b;
+  --forest-dark: #202f27;
+  --cream: #f5f0df;
+  --paper: #fff9e9;
+  --butter: #f0d994;
+  --rose: #e7b9b1;
+  --ink: #303b30;
+  --muted: #74806e;
+  --line: rgba(52, 74, 59, 0.2);
+}
+
+html,
+body {
+  background-color: var(--cream) !important;
+  color: var(--ink) !important;
+}
+
+body {
+  background-image:
+    radial-gradient(ellipse at 15% 10%, #fffdf5 0%, transparent 50%),
+    radial-gradient(ellipse at 90% 85%, #dce4d2 0%, transparent 48%) !important;
+}
+
+/* Make the HOME screen fill the stage and center its contents */
+#screen-home.active {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+#screen-home {
+  text-align: center;
+}
+
+#screen-home > * {
+  max-width: 100%;
+}
+
+/* Center the actual menu */
+#menu,
+.menu,
+.menu-list {
+  width: 100% !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+.menu-item {
+  width: min(360px, 100%) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  justify-content: center !important;
+  background: var(--paper) !important;
+  border: 1px solid #b6c3ad !important;
+  color: var(--forest) !important;
+}
+
+.menu-item:hover,
+.menu-item.sel,
+.menu-item[aria-current="page"] {
+  background: var(--forest) !important;
+  color: var(--paper) !important;
+}
+
+/* Bring back color in headings and body text */
+#big-name,
+.screen h1,
+.screen h2,
+.screen h3,
+.section-heading h1,
+.section-heading h2,
+.scrap-card h3 {
+  color: var(--forest) !important;
+}
+
+.screen p,
+.home-subtitle,
+.section-heading p,
+.scrap-card p {
+  color: #586151 !important;
+}
+
+/* Keep scrapbook cards colorful */
+.scrap-card.paper-sage {
+  background: #dce6d2 !important;
+  color: var(--ink) !important;
+}
+
+.scrap-card.paper-cream {
+  background: #fff8e7 !important;
+  color: var(--ink) !important;
+}
+
+.scrap-card.paper-butter {
+  background: #f2e2aa !important;
+  color: var(--ink) !important;
+}
+
+.scrap-card.paper-rose {
+  background: #f0d5ce !important;
+  color: var(--ink) !important;
+}
+
+/* Make sure the section screens retain the scrapbook palette */
+.screen {
+  color: var(--ink);
+}
+
+.section-links a,
+.back-hint {
+  background-color: var(--paper);
+  color: var(--forest);
+}
+
+#music-toggle {
+  background-color: var(--paper);
+  color: var(--forest);
+}
+
+/* Center the home title on small screens too */
+@media (max-width: 600px) {
+  #screen-home.active {
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  #menu,
+  .menu,
+  .menu-list {
+    align-items: center !important;
+  }
+}
