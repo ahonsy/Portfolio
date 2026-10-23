@@ -231,7 +231,6 @@ const View = {
 
     const stripes = document.getElementById("bg-stripes");
     const halftone = document.getElementById("bg-halftone");
-    const arts = [...document.querySelectorAll(".menu-art")];
 
     let tx = 0, ty = 0, cx = 0, cy = 0;
 
@@ -253,13 +252,6 @@ const View = {
         halftone.style.transform =
           `translate(${cx * -34}px, ${cy * -22}px)`;
       }
-
-      arts.forEach(art => {
-        if (art.isConnected) {
-          art.style.transform =
-            `translate(${cx * 14}px, ${cy * 9}px) scale(1.04)`;
-        }
-      });
 
       requestAnimationFrame(loop);
     };
