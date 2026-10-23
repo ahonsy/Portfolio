@@ -1251,3 +1251,59 @@ body[data-screen="contact"].has-art-contact #art-contact {
     max-height: 32vh !important;
   }
 }
+/* ===== CLEAN FULLSCREEN HOME BACKGROUND ===== */
+
+#bg {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  overflow: hidden !important;
+  z-index: 0 !important;
+  background: #e8eadf !important;
+}
+
+/* Home image fills the entire viewport */
+#art-home {
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: none !important;
+  z-index: 0 !important;
+}
+
+body[data-screen="home"] #art-home {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Hide decorative overlays and stars */
+#bg-stripes,
+#bg-halftone,
+#bg-vignette,
+#bg .bg-star {
+  display: none !important;
+}
+
+/* Hide all other section art while on home */
+body[data-screen="home"] #art-projects,
+body[data-screen="home"] #art-skills,
+body[data-screen="home"] #art-about,
+body[data-screen="home"] #art-contact {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+#shell {
+  position: relative !important;
+  z-index: 10 !important;
+}
