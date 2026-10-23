@@ -1,8 +1,3 @@
-
-/* =====================================================================
-   CONTROLLER — navigation, projects, skills, contact form and audio.
-   ===================================================================== */
-
 const Controller = {
   transitioning: false,
   audioUnlocked: false,
@@ -12,91 +7,12 @@ const Controller = {
     this.bindMenu();
     this.bindKeyboard();
     this.bindAudioUnlock();
-    this.bindContactForm();
     this.bindBackgroundMusic();
   },
 
-  /* ---------- Contact form ---------- */
-  bindContactForm() {
-    const form = document.getElementById("contact-form");
-    if (!form) return;
-
-    const status = document.getElementById("form-status");
-    const btn = form.querySelector(".form-send");
-
-    form.addEventListener("submit", async e => {
-      e.preventDefault();
-
-      const data = Object.fromEntries(new FormData(form).entries());
-
-      if (data._honey) return;
-
-      if (
-        !data.name?.trim() ||
-        !data.email?.trim() ||
-        !data.message?.trim()
-      ) {
-        if (status) status.textContent = "Fill in all three fields first.";
-        return;
-      }
-
-      if (btn) btn.disabled = true;
-      if (status) status.textContent = "Sending…";
-
-      try {
-        const res = await fetch(
-          `https://formsubmit.co/ajax/${Model.contactEmail}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json"
-            },
-            body: JSON.stringify({
-              name: data.name,
-              email: data.email,
-              message: data.message,
-              _subject: `Portfolio message from ${data.name}`
-            })
-          }
-        );
-
-        if (!res.ok) throw new Error(`Form submission failed: ${res.status}`);
-
-        const result = await res.json();
-
-        if (result.success === "false") {
-          throw new Error("The form service rejected the message.");
-        }
-
-        if (status) status.textContent = "Sent! I'll get back to you soon.";
-        form.reset();
-        this.play();
-      } catch (error) {
-        console.error("Contact form submission failed:", error);
-
-        if (status) {
-          status.textContent = "Opening your email app instead…";
-        }
-
-        const subject = encodeURIComponent(
-          `Portfolio message from ${data.name}`
-        );
-        const body = encodeURIComponent(
-          `${data.message}\n\nReply to: ${data.email}`
-        );
-
-        location.href =
-          `mailto:${Model.contactEmail}?subject=${subject}&body=${body}`;
-      } finally {
-        if (btn) btn.disabled = false;
-      }
-    });
-  },
-
-  /* ---------- Navigation ---------- */
   goTo(screen) {
     if (this.transitioning || screen === Model.state.screen) return;
+    if (!View.els.screens[screen]) return;
 
     this.transitioning = true;
     this.play();
@@ -105,9 +21,6 @@ const Controller = {
       () => {
         Model.state.screen = screen;
         View.showScreen(screen);
-
-        if (screen === "projects") this.loadProjects();
-        if (screen === "skills") this.loadSkills();
       },
       () => {
         this.transitioning = false;
@@ -116,8 +29,10 @@ const Controller = {
   },
 
   select(index) {
-    const n = View.els.menuItems.length;
-    const next = (index + n) % n;
+    const count = View.els.menuItems.length;
+    if (!count) return;
+
+    const next = (index + count) % count;
 
     if (next !== Model.state.menuIndex) this.play();
 
@@ -125,47 +40,6 @@ const Controller = {
     View.setMenuSelection(next);
   },
 
-  /* ---------- Projects ---------- */
-  async loadProjects() {
-    View.renderFeatured(Model.featured);
-
-    if (Model.state.reposLoaded) return;
-
-    try {
-      const repos = await Model.fetchRepos();
-      const safeRepos = Array.isArray(repos) ? repos : [];
-
-      View.renderRepos(
-        safeRepos,
-        safeRepos.length
-          ? `Showing ${safeRepos.length} repositories`
-          : "No additional repositories to display.",
-        Model
-      );
-    } catch (error) {
-      console.error("Project loading failed:", error);
-
-      const fallback = Array.isArray(Model.fallbackRepos)
-        ? Model.fallbackRepos
-        : [];
-
-      View.renderRepos(fallback, "Showing locally saved repositories.", Model);
-    } finally {
-      Model.state.reposLoaded = true;
-    }
-  },
-
-  /* ---------- Skills ---------- */
-  loadSkills() {
-    if (!Model.state.skillsBuilt) {
-      View.renderSkills(Model.skills);
-      Model.state.skillsBuilt = true;
-    }
-
-    View.animateSkillBars();
-  },
-
-  /* ---------- Navigation sound effects ---------- */
   play() {
     if (this.audioUnlocked) View.playSelect();
   },
@@ -186,15 +60,11 @@ const Controller = {
     });
   },
 
-  /* ---------- Background music ---------- */
   bindBackgroundMusic() {
     const music = document.getElementById("bg-music");
     const toggle = document.getElementById("music-toggle");
 
-    if (!music) {
-      console.error("Background music element #bg-music was not found.");
-      return;
-    }
+    if (!music) return;
 
     music.volume = 0.35;
     music.loop = true;
@@ -203,39 +73,33 @@ const Controller = {
       if (!toggle) return;
 
       const playing = !music.paused && !music.ended;
-
       toggle.textContent = playing ? "♫ MUSIC: ON" : "♫ MUSIC: OFF";
-      toggle.setAttribute(
-        "aria-label",
-        playing ? "Pause background music" : "Play background music"
-      );
+      toggle.setAttribute("aria-label",
+        playing ? "Pause background music" : "Play background music");
       toggle.setAttribute("aria-pressed", String(playing));
     };
 
-    /* Start from the beginning whenever playback is requested. */
     const startMusic = async () => {
       if (!music.paused) return;
 
       try {
-        music.currentTime = 0;
         await music.play();
-        updateButton();
-        console.log("Background music started from 0:00.");
       } catch (error) {
-        console.warn("Background music could not start:", error);
-        updateButton();
+        console.warn("Music playback was blocked or failed.", error);
       }
+
+      updateButton();
     };
 
-    /* Optional manual toggle. */
     if (toggle) {
       toggle.addEventListener("click", async () => {
         if (!music.paused) {
           music.pause();
-          updateButton();
         } else {
           await startMusic();
         }
+
+        updateButton();
       });
     }
 
@@ -243,50 +107,12 @@ const Controller = {
     music.addEventListener("pause", updateButton);
     music.addEventListener("ended", updateButton);
 
-    music.addEventListener("error", () => {
-      console.error("Audio loading error:", music.error?.code);
-      if (toggle) toggle.textContent = "♫ MUSIC ERROR";
-    });
-
     updateButton();
-
-    /*
-     * AUTOPLAY:
-     * Attempt playback as soon as the portfolio opens.
-     * If the browser blocks autoplay, retry on the visitor's first
-     * interaction. Browsers may still require an explicit interaction.
-     */
-    music.currentTime = 0;
-
-    music.play()
-      .then(() => {
-        updateButton();
-        console.log("Background music autoplay started.");
-      })
-      .catch(error => {
-        console.warn("Autoplay blocked; waiting for first interaction.", error);
-
-        let started = false;
-
-        const retryAutoplay = () => {
-          if (started) return;
-          started = true;
-
-          document.removeEventListener("pointerdown", retryAutoplay);
-          document.removeEventListener("keydown", retryAutoplay);
-
-          startMusic();
-        };
-
-        document.addEventListener("pointerdown", retryAutoplay);
-        document.addEventListener("keydown", retryAutoplay);
-      });
   },
 
-  /* ---------- Menu bindings ---------- */
   bindMenu() {
-    View.els.menuItems.forEach((item, i) => {
-      item.addEventListener("mouseenter", () => this.select(i));
+    View.els.menuItems.forEach((item, index) => {
+      item.addEventListener("mouseenter", () => this.select(index));
 
       item.addEventListener("click", () => {
         this.goTo(item.dataset.target);
@@ -310,21 +136,23 @@ const Controller = {
     }
   },
 
-  /* ---------- Keyboard controls ---------- */
   bindKeyboard() {
-    addEventListener("keydown", e => {
+    addEventListener("keydown", event => {
+      if (event.altKey || event.ctrlKey || event.metaKey) return;
+
       if (Model.state.screen === "home") {
-        if (e.key === "ArrowDown") {
+        if (event.key === "ArrowDown") {
           this.select(Model.state.menuIndex + 1);
-          e.preventDefault();
-        } else if (e.key === "ArrowUp") {
+          event.preventDefault();
+        } else if (event.key === "ArrowUp") {
           this.select(Model.state.menuIndex - 1);
-          e.preventDefault();
-        } else if (e.key === "Enter") {
+          event.preventDefault();
+        } else if (event.key === "Enter") {
           const item = View.els.menuItems[Model.state.menuIndex];
+
           if (item) this.goTo(item.dataset.target);
         }
-      } else if (e.key === "Escape") {
+      } else if (event.key === "Escape") {
         this.goTo("home");
       }
     });
